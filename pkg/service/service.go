@@ -1,0 +1,22 @@
+package service
+
+import "github.com/grancc/go-to-do-app/pkg/repository"
+
+type Authorization interface {
+}
+
+type TodoList interface {
+}
+
+type ToodItem interface {
+}
+
+type Service struct {
+	Authorization
+	TodoList
+	ToodItem
+}
+
+func NewService(repo *repository.Repository) *Service {
+	return &Service{}
+}
