@@ -32,5 +32,14 @@ services:
       db:
         condition: service_healthy
 
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - ./shema:/migrations
+    command: ["-path", "/migrations", "-database", "postgres://gotodo:secret@db:5432/gotodo?sslmode=disable", "up"]
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   postgres_data:
