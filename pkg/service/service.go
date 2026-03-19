@@ -1,8 +1,12 @@
 package service
 
-import "github.com/grancc/go-to-do-app/pkg/repository"
+import (
+	gotodo "github.com/grancc/go-to-do-app"
+	"github.com/grancc/go-to-do-app/pkg/repository"
+)
 
 type Authorization interface {
+	CreateUser(user gotodo.User) (int, error)
 }
 
 type TodoList interface {
@@ -18,5 +22,7 @@ type Service struct {
 }
 
 func NewService(repo *repository.Repository) *Service {
-	return &Service{}
+	return &Service{
+		Authorization: NewAuthService(repo.Authorization),
+	}
 }
