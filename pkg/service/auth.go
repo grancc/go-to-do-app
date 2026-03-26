@@ -2,6 +2,7 @@ package service
 
 import (
 	"crypto/sha1"
+	"errors"
 	"fmt"
 	"time"
 
@@ -13,7 +14,7 @@ import (
 const (
 	salt       = "nboiwgbOBGRbjjnoiwrjeggntrjfkegnf"
 	tokenTTL   = 12 * time.Hour
-	singingKey = "ngviWGHOQGWOwgnge"
+	signingKey = "ngviWGHOQGWOwgnge"
 )
 
 type AutService struct {
@@ -48,7 +49,7 @@ func (s *AutService) GenerateToken(username, password string) (string, error) {
 		user.Id,
 	})
 
-	tokenString, err := token.SignedString([]byte(singingKey))
+	tokenString, err := token.SignedString([]byte(signingKey))
 	if err != nil {
 		return "", err
 	}
@@ -61,4 +62,24 @@ func generatePasswordHash(password string) string {
 	hash.Write([]byte(password))
 
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+}
+
+func (s *AutService) ParseToken(accessToken string) (int, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid signig method")
+		}
+
+		return []byte(signingKey), nil
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	claims, ok := token.Claims.(*tokenClaims)
+	if !ok {
+		return 0, errors.New("token claims are not of type")
+	}
+
+	return claims.UserId, nil
 }

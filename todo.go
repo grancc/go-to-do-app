@@ -1,9 +1,9 @@
 package gotodo
 
 type ToDoList struct {
-	Id          int    `json: "-"`
-	Title       string `json: "title"`
-	Description string `json: "description"`
+	Id          int    `json:"-"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
 }
 
 type UserList struct {
@@ -13,9 +13,9 @@ type UserList struct {
 }
 
 type ToDoItem struct {
-	Id          int    `json: "-"`
-	Title       string `json: "title"`
-	Description string `json: "description"`
+	Id          int    `json:"-"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
 	Done        bool   `json:"done"`
 }
 
