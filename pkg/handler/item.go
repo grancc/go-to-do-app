@@ -8,6 +8,19 @@ import (
 	gotodo "github.com/grancc/go-to-do-app"
 )
 
+// CreateItem adds a todo item to a list.
+// @Summary Create item
+// @Tags Items
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "List id"
+// @Param input body gotodo.ToDoItem true "New item"
+// @Success 200 {object} IdResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/{id}/items [post]
 func (h *Handler) createItem(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -33,15 +46,23 @@ func (h *Handler) createItem(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
-	})
+	c.JSON(http.StatusOK, IdResponse{Id: id})
 }
 
 type getAllItemsResponse struct {
 	Data []gotodo.ToDoItem `json:"data"`
 }
 
+// GetAllItems returns items for a list.
+// @Summary List items in a list
+// @Tags Items
+// @Security ApiKeyAuth
+// @Produce json
+// @Param id path int true "List id"
+// @Success 200 {object} getAllItemsResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/{id}/items [get]
 func (h *Handler) getAllItems(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -66,6 +87,16 @@ func (h *Handler) getAllItems(c *gin.Context) {
 	})
 }
 
+// GetItemById returns a single item for the user.
+// @Summary Get item by id
+// @Tags Items
+// @Security ApiKeyAuth
+// @Produce json
+// @Param item_id path int true "Item id"
+// @Success 200 {object} gotodo.ToDoItem
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/items/{item_id} [get]
 func (h *Handler) getItemById(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -88,6 +119,18 @@ func (h *Handler) getItemById(c *gin.Context) {
 	c.JSON(http.StatusOK, item)
 }
 
+// @Summary Update item
+// @Tags Items
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param item_id path int true "Item id"
+// @Param input body gotodo.UpdateListItemInput true "Fields to update"
+// @Success 200 {object} StatusResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/items/{item_id} [put]
 func (h *Handler) updateItem(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -113,11 +156,21 @@ func (h *Handler) updateItem(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, statusResponse{
+	c.JSON(http.StatusOK, StatusResponse{
 		Status: "ok",
 	})
 }
 
+// DeleteItem removes an item.
+// @Summary Delete item
+// @Tags Items
+// @Security ApiKeyAuth
+// @Produce json
+// @Param item_id path int true "Item id"
+// @Success 200 {object} StatusResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/items/{item_id} [delete]
 func (h *Handler) deleteItem(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -137,7 +190,7 @@ func (h *Handler) deleteItem(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, statusResponse{
+	c.JSON(http.StatusOK, StatusResponse{
 		Status: "ok",
 	})
 }

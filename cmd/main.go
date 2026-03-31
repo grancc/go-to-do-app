@@ -1,5 +1,16 @@
 package main
 
+// @title           To Do App API
+// @version         1.0
+// @description     API for todo lists. Protected routes: Authorization header with two words, e.g. Bearer plus JWT.
+// @host            localhost:8080
+// @BasePath        /
+// @schemes         http
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+
 import (
 	"context"
 	"os"

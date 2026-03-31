@@ -9,8 +9,19 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-type statusResponse struct {
+// StatusResponse confirms a mutation succeeded.
+type StatusResponse struct {
 	Status string `json:"status"`
+}
+
+// IdResponse returns created entity id.
+type IdResponse struct {
+	Id int `json:"id"`
+}
+
+// TokenResponse returns JWT after sign-in.
+type TokenResponse struct {
+	Token string `json:"token"`
 }
 
 func NewErrorResponse(c *gin.Context, statusCode int, message string) {

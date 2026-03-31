@@ -8,6 +8,18 @@ import (
 	gotodo "github.com/grancc/go-to-do-app"
 )
 
+// CreateList adds a todo list for the authenticated user.
+// @Summary Create list
+// @Tags Lists
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param input body gotodo.ToDoList true "New list"
+// @Success 200 {object} IdResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/lists [post]
 func (h *Handler) createList(c *gin.Context) {
 	id, err := getUserId(c)
 	if err != nil {
@@ -27,15 +39,22 @@ func (h *Handler) createList(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
-	})
+	c.JSON(http.StatusOK, IdResponse{Id: id})
 }
 
 type getAllListsResponse struct {
 	Data []gotodo.ToDoList `json:"data"`
 }
 
+// GetLists returns all lists of the current user.
+// @Summary List all todo lists
+// @Tags Lists
+// @Security ApiKeyAuth
+// @Produce json
+// @Success 200 {object} getAllListsResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/lists [get]
 func (h *Handler) getList(c *gin.Context) {
 	id, err := getUserId(c)
 	if err != nil {
@@ -54,6 +73,16 @@ func (h *Handler) getList(c *gin.Context) {
 	})
 }
 
+// GetListById returns one list by id if it belongs to the user.
+// @Summary Get list by id
+// @Tags Lists
+// @Security ApiKeyAuth
+// @Produce json
+// @Param id path int true "List id"
+// @Success 200 {object} gotodo.ToDoList
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/lists/{id} [get]
 func (h *Handler) getListById(c *gin.Context) {
 	userid, err := getUserId(c)
 	if err != nil {
@@ -76,6 +105,19 @@ func (h *Handler) getListById(c *gin.Context) {
 	c.JSON(http.StatusOK, list)
 }
 
+// UpdateList patches title/description.
+// @Summary Update list
+// @Tags Lists
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "List id"
+// @Param input body gotodo.UpdateListInput true "Fields to update"
+// @Success 200 {object} StatusResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/lists/{id} [put]
 func (h *Handler) updateList(c *gin.Context) {
 	userid, err := getUserId(c)
 	if err != nil {
@@ -101,11 +143,21 @@ func (h *Handler) updateList(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, statusResponse{
+	c.JSON(http.StatusOK, StatusResponse{
 		Status: "ok",
 	})
 }
 
+// DeleteList removes a list owned by the user.
+// @Summary Delete list
+// @Tags Lists
+// @Security ApiKeyAuth
+// @Produce json
+// @Param id path int true "List id"
+// @Success 200 {object} StatusResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/lists/{id} [delete]
 func (h *Handler) deleteList(c *gin.Context) {
 	userid, err := getUserId(c)
 	if err != nil {
@@ -125,7 +177,7 @@ func (h *Handler) deleteList(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, statusResponse{
+	c.JSON(http.StatusOK, StatusResponse{
 		Status: "ok",
 	})
 }
