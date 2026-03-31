@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"strings"
 
 	gotodo "github.com/grancc/go-to-do-app"
 	"github.com/jmoiron/sqlx"
@@ -52,4 +53,36 @@ func (t *ToDoListPostgres) GetById(userId, listid int) (gotodo.ToDoList, error) 
 		todoListsTable, userToTodolistTable)
 	err := t.db.Get(&list, query, userId, listid)
 	return list, err
+}
+
+func (t *ToDoListPostgres) Delete(userId, listid int) error {
+	query := fmt.Sprintf("delete from %s tl using %s ul where tl.id=ul.listid and ul.userid = $1 and tl.id = $2",
+		todoListsTable, userToTodolistTable)
+	_, err := t.db.Exec(query, userId, listid)
+	return err
+}
+
+func (t *ToDoListPostgres) UpdateList(userId, listid int, input gotodo.UpdateListInput) error {
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if input.Title != nil {
+		setValues = append(setValues, fmt.Sprintf("title=$%d", argId))
+		args = append(args, input.Title)
+		argId++
+	}
+	if input.Description != nil {
+		setValues = append(setValues, fmt.Sprintf("description=$%d", argId))
+		args = append(args, input.Description)
+		argId++
+	}
+
+	setQuery := strings.Join(setValues, ", ")
+	query := fmt.Sprintf("update %s tl set %s from %s ul where tl.id=ul.listid and ul.listid=$%d and ul.userid = $%d",
+		todoListsTable, setQuery, userToTodolistTable, argId, argId+1)
+	args = append(args, listid, userId)
+
+	_, err := t.db.Exec(query, args...)
+	return err
 }
