@@ -16,8 +16,8 @@ type UserList struct {
 
 type ToDoItem struct {
 	Id          int    `json:"-"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	Title       string `json:"title" binding:"required"`
+	Description string `json:"description" binding:"required"`
 	Done        bool   `json:"done"`
 }
 
@@ -34,6 +34,20 @@ type UpdateListInput struct {
 
 func (i UpdateListInput) Validate() error {
 	if i.Title == nil && i.Description == nil {
+		return errors.New("update structure has no values")
+	}
+
+	return nil
+}
+
+type UpdateListItemInput struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Done        *bool   `json:"done"`
+}
+
+func (i UpdateListItemInput) Validate() error {
+	if i.Title == nil && i.Description == nil && i.Done == nil {
 		return errors.New("update structure has no values")
 	}
 
